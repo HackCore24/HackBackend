@@ -8,5 +8,7 @@ jobs:
     runs-on: deploy
     steps:
       - uses: actions/checkout@v3
+      - name: Получение env
+        run: echo "${{ secrets.PROD_ENV }}" > .env
       - name: Билд и запуск
         run: docker compose --ansi=never -f deploy/docker-compose.yml up --build -d

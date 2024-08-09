@@ -4,7 +4,7 @@ from typing import Optional
 
 import phonenumbers
 from fastapi import HTTPException
-from pydantic import BaseModel, Field, EmailStr, field_validator
+from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict
 
 ALLOWED_COUNTRY = ['375', '7', '374', '994', '995', '380', '371', '373', '996', '993', '998']
 
@@ -75,6 +75,8 @@ class UserRead(UserBase):
     created_at: datetime
     updated_at: datetime
     role: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TelegramAuthData(BaseModel):

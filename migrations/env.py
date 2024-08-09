@@ -20,6 +20,10 @@ if config.config_file_name is not None:
 
 # Models start
 from api.users.model import Users
+from api.project.model import Projects, RelatedProject
+from api.project_budget.model import ProjectBudget
+from api.project_statuses.model import ProjectStatuses, ProjectStatusReach
+from api.project_documentation.model import ProjectDocumentations
 
 # Models end
 

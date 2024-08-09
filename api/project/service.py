@@ -62,6 +62,15 @@ class ProjectService(BaseService):
         await self.session.commit()
         return relate
 
+    async def get_related_projects(self, project_id):
+        related_projects = await self.session.scalars(
+            select(Projects)
+            .join(RelatedProject, Projects.id == RelatedProject.related_project_id)
+            .where(RelatedProject.project_id == project_id)
+        )
+
+        return related_projects.all()
+
 
 async def get_project_service(session=Depends(AsyncDatabase.get_session)):
     return ProjectService(session)

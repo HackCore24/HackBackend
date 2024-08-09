@@ -24,6 +24,7 @@ from api.project.model import Projects, RelatedProject
 from api.project_budget.model import ProjectBudget
 from api.project_statuses.model import ProjectStatuses, ProjectStatusReach
 from api.project_documentation.model import ProjectDocumentations
+from api.project_tasks.model import ProjectTasks
 
 # Models end
 

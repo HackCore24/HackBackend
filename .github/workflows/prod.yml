@@ -11,4 +11,4 @@ jobs:
       - name: Получение env
         run: echo "${{ secrets.PROD_ENV }}" > .env
       - name: Билд и запуск
-        run: docker compose --ansi=never -f deploy/docker-compose.yml up --build --no-cache -d
+        run: docker compose --ansi=never -f deploy/docker-compose.yml up --build -d

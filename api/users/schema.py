@@ -15,6 +15,7 @@ class UserBase(BaseModel):
     username: str = Field(max_length=40)
     email: Optional[EmailStr] = Field(default=None, max_length=64)
     phone: Optional[str] = Field(default=None, max_length=20)
+    avatar: Optional[str] = None
     telegram: Optional[str] = None
     telegram_id: Optional[int] = None
 
@@ -55,6 +56,17 @@ class UserCreate(UserBase):
     @field_validator("role")
     def validate_role(cls, v):
         return v.lower()
+
+
+class UserUpdate(BaseModel):
+    firstname: Optional[str] = Field(default=None, max_length=40)
+    lastname: Optional[str] = Field(default=None, max_length=40)
+    username: Optional[str] = Field(default=None, max_length=40)
+    email: Optional[EmailStr] = Field(default=None, max_length=64)
+    phone: Optional[str] = Field(default=None, max_length=20)
+    avatar: Optional[str] = None
+    telegram: Optional[str] = None
+    telegram_id: Optional[int] = None
 
 
 class UserRead(UserBase):

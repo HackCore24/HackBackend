@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from api.users.schema import UserRead
+from api.users.schema import UserRead, UserUpdate
 from api.users.service import user_service
 from utils.base.authentication import get_me
 
@@ -33,3 +33,8 @@ async def current_user(user=Depends(get_me)):
 @users_router.get('/{user_id}', name='get user by id', response_model=UserRead)
 async def user_by_id(user_id: str, users=user_service, me=Depends(get_me)):
     return await users.id(user_id)
+
+
+@users_router.patch('/{user_id}', name="Update user", response_model=UserRead)
+async def update_user(user_id: str, user: UserUpdate, users=user_service, me=Depends(get_me)):
+    return await users.update(user_id, user.model_dump(mode='json'))

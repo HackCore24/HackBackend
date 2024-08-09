@@ -18,6 +18,7 @@ class Users(Base):
     password: Mapped[str] = mapped_column(nullable=True)
     phone: Mapped[str] = mapped_column(unique=True, nullable=True)
     role: Mapped[str]
+    avatar: Mapped[str] = mapped_column(nullable=True)
     telegram: Mapped[str] = mapped_column(nullable=True)
     telegram_id: Mapped[int] = mapped_column(type_=BIGINT, nullable=True)
 

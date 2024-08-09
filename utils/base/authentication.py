@@ -1,10 +1,10 @@
 import uuid
 from datetime import datetime, timedelta
-import jose
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.future import select
 from jose import jwt
+from jose.exceptions import ExpiredSignatureError
 from api.users.model import Users
 from utils.base.config import settings
 from utils.base.session import AsyncDatabase
@@ -32,7 +32,7 @@ async def decode_token(token: str):
     try:
         decode_jwt = jwt.decode(token=token, key=KEY, algorithms=[ALGORITHM])
         return decode_jwt
-    except jose.exceptions.ExpiredSignatureError:
+    except ExpiredSignatureError:
         raise HTTPException(401, detail="Token expired")
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid token: " + str(e))
@@ -49,7 +49,7 @@ async def get_me(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token=token, key=KEY, algorithms=[ALGORITHM])
 
-    except jwt.ExpiredSignatureError:
+    except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid token: " + str(e))

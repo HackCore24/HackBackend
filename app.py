@@ -17,7 +17,6 @@ app = FastAPI(title="HackBackend API",
               })
 app.add_middleware(ApidocBasicAuthMiddleware)
 
-
 origins = ["http://localhost:3000", "http://localhost:5500"]
 
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*", "OPTIONS"],
@@ -26,8 +25,6 @@ app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True
 router = APIRouter()
 
 router.include_router(router=api_router)
-
-app.include_router(router)
 
 
 @router.get("/ping", tags=["Server"])

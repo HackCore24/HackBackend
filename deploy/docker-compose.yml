@@ -1,0 +1,33 @@
+version: '3.9'
+
+x-base: &base
+  platform: linux/amd64
+  stop_signal: SIGINT
+  restart: always
+  labels:
+    app: RecPlace
+  env_file:
+    - ../.env
+
+services:
+  backend:
+    <<: *base
+    build:
+      context: ../.
+      dockerfile: ./deploy/Dockerfile
+    command: [ "python", "/app/app.py" ]
+#    command: [ "uvicorn", "app:app", "--reload", "--port", "8000", "--host", "0.0.0.0"]
+    ports:
+      - "8000:8000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.24core.ru`)"
+      - "traefik.http.routers.backend.entrypoints=https"
+      - "traefik.http.routers.backend.service=backend"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    networks:
+      - traefik-proxy
+networks:
+  traefik-proxy:
+    name: traefik-proxy
+    external: true

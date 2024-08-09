@@ -1,0 +1,12 @@
+name: Production Workflow
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: deploy
+    steps:
+      - uses: actions/checkout@v3
+      - name: Билд и запуск
+        run: docker compose --ansi=never -f deploy/docker-compose.yml up --build -d

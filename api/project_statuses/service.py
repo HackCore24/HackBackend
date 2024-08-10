@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload, noload
 
 from api.project.model import Projects
+from services.telegram import TelegramAPI
 from utils.base.service import BaseService
 from utils.base.session import AsyncDatabase
 from api.project_statuses.model import ProjectStatuses, ProjectStatusReach
@@ -13,7 +14,7 @@ from api.project_statuses.model import ProjectStatuses, ProjectStatusReach
 class ProjectStatusesService(BaseService):
     model = ProjectStatuses
 
-    async def change_status(self, status_id, project_id):
+    async def change_status(self, status_id, project_id, user):
         project = await self.session.get(Projects, project_id)
         if not project:
             raise HTTPException(404, "project not found")
@@ -24,6 +25,9 @@ class ProjectStatusesService(BaseService):
         status_reach = ProjectStatusReach(status_id=status_id, project_id=project_id, date_reach=datetime.now())
         self.session.add(status_reach)
         await self.session.commit()
+
+        message = ""
+        await TelegramAPI().send_message(user.telegram_id, message)
         return status_reach
 
     async def project(self, project_id):

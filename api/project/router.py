@@ -12,13 +12,16 @@ project_router = APIRouter()
 async def create_project(project: ProjectCreate, projects=projects_service, me=Depends(get_me)):
     return await projects.create_project(project)
 
+
 @project_router.post('/relate', name="releate project")
-async def releate_project(project_id: str, relate_project_id: str,projects=projects_service, me=Depends(get_me)):
+async def releate_project(project_id: str, relate_project_id: str, projects=projects_service, me=Depends(get_me)):
     return await projects.create_relation(project_id, relate_project_id)
 
+
 @project_router.get('/relate', name="get releate project")
-async def releate_project(project_id: str,projects=projects_service, me=Depends(get_me)):
+async def releate_project(project_id: str, projects=projects_service, me=Depends(get_me)):
     return await projects.get_related_projects(project_id)
+
 
 @project_router.get('/', name="Get All Projects", response_model=List[ProjectRead])
 async def get_all_projects(projects=projects_service, me=Depends(get_me)):

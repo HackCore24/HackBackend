@@ -190,6 +190,7 @@ class UsersService(BaseService):
                          lastname=telegram_data.last_name if telegram_data.last_name else "",
                          username=username if username else telegram_data.username,
                          telegram_id=telegram_data.id,
+                         telegram=telegram_data.username,
                          password=password,
                          role="user")
             self.session.add(user)

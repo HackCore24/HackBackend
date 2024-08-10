@@ -21,7 +21,7 @@ app = FastAPI(title="HackBackend API",
               })
 app.add_middleware(ApidocBasicAuthMiddleware)
 
-origins = ["http://localhost:3000", "http://localhost:5500"]
+origins = ["http://localhost:3000", "http://localhost:5500", "https://24core.ru"]
 
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*", "OPTIONS"],
                    allow_headers=["*"], max_age=3600)

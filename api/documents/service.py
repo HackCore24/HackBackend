@@ -1,13 +1,10 @@
 import base64
-from datetime import datetime
 from io import BytesIO
-
 import aiohttp
 import cloudconvert
 from fastapi import Depends, HTTPException, UploadFile
+from jinja2 import Template
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload, noload
-
 from api.documents.model import Documents, DocumentsProjects
 from utils.base.service import BaseService
 from utils.base.session import AsyncDatabase
@@ -67,11 +64,8 @@ class DocumentsService(BaseService):
         await self.session.commit()
         return doc
 
-    async def fetch_docs_from_html(self, document_id):
-        doc = await self.session.get(Documents, document_id)
-        if not doc:
-            raise HTTPException(404, "not found")
-        byte_doc = doc.html.encode('utf-8')
+    async def convert_html_to_docx(self, html, filename):
+        byte_doc = html.encode('utf-8')
         base64_bytes = base64.b64encode(byte_doc)
         base64_string = base64_bytes.decode('utf-8')
 
@@ -80,7 +74,7 @@ class DocumentsService(BaseService):
                 "import": {
                     "operation": "import/base64",
                     "file": f"{base64_string}",
-                    "filename": f"{doc.title}.html"
+                    "filename": f"{filename}.html"
                 },
                 "convert": {
                     "operation": "convert",
@@ -106,7 +100,7 @@ class DocumentsService(BaseService):
         job_id = job['tasks'][-1]['id']
         convert_result = cloudconvert.Task.wait(job_id)
         convert_result_link = convert_result['result']['files'][0]['url']
-        return doc, convert_result_link
+        return convert_result_link
 
     async def download_file(self, url: str) -> BytesIO:
         async with aiohttp.ClientSession() as session:
@@ -137,6 +131,15 @@ class DocumentsService(BaseService):
         )
 
         return related_docs.all()
+
+    async def generate(self, document_id, variables):
+        document = await self.session.get(Documents, document_id)
+        format_variables = {}
+        for var in variables:
+            format_variables[var.key] = var.input
+        template = Template(document.html)
+        html = template.render(format_variables)
+        return document, html
 
 
 async def get_documents_service(session=Depends(AsyncDatabase.get_session)):

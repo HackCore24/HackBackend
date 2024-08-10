@@ -27,3 +27,8 @@ class DocumentsUpdate(BaseModel):
     title: Optional[str] = None
     filename: Optional[str] = None
     html: Optional[str] = None
+
+class InputVariables(BaseModel):
+    title: str
+    key: str
+    input: str

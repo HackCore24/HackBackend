@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from starlette.responses import StreamingResponse
 
 from api.documents.service import documents_service
-from api.documents.schema import DocumentsRead, DocumentsCreate, DocumentsUpdate
+from api.documents.schema import DocumentsRead, DocumentsCreate, DocumentsUpdate, InputVariables
 from utils.base.authentication import get_me
 
 document_router = APIRouter()
@@ -24,7 +24,21 @@ async def create_document(document: UploadFile = File(...), documents=documents_
 
 @document_router.post('/download', name="Download Document", response_model=DocumentsRead)
 async def create_document(document_id: str, documents=documents_service, me=Depends(get_me)):
-    document, document_link = await documents.fetch_docs_from_html(document_id)
+    document = await documents.id(document_id)
+    document_link = await documents.convert_html_to_docx(html=document.html, filename=document.title)
+    file_data = await documents.download_file(document_link)
+    filename_utf8 = quote(f"{document.title}.docx")
+    content_disposition = f'attachment; filename*=UTF-8\'\'{filename_utf8}'
+    return StreamingResponse(file_data,
+                             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                             headers={"Content-Disposition": content_disposition})
+
+
+@document_router.post('/generate', name="Download generate Document", response_model=DocumentsRead)
+async def create_document(document_id: str, variables: List[InputVariables], documents=documents_service,
+                          me=Depends(get_me)):
+    document, html = await documents.generate(document_id, variables)
+    document_link = await documents.convert_html_to_docx(html=html, filename=document.title)
     file_data = await documents.download_file(document_link)
     filename_utf8 = quote(f"{document.title}.docx")
     content_disposition = f'attachment; filename*=UTF-8\'\'{filename_utf8}'

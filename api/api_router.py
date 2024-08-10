@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from api.documents.router import document_router
 from api.project.router import project_router
 from api.project_budget.router import budget_router
 from api.project_documentation.router import documentation_router
@@ -7,6 +8,7 @@ from api.project_statuses.router import status_router
 from api.project_tasks.router import tasks_router
 from api.users.auth_router import auth_router
 from api.users.users_router import users_router
+from api.variables.router import variable_router
 
 api_router = APIRouter()
 
@@ -17,3 +19,5 @@ api_router.include_router(budget_router, tags=['Project Budget'], prefix='/proje
 api_router.include_router(documentation_router, tags=['Project Documentation'], prefix='/project_documentation')
 api_router.include_router(status_router, tags=['Project Statuses'], prefix='/project_statuses')
 api_router.include_router(tasks_router, tags=['Project Tasks'], prefix='/project_tasks')
+api_router.include_router(document_router, tags=['Documents'], prefix='/documents')
+api_router.include_router(variable_router, tags=['Variables'], prefix='/variables')

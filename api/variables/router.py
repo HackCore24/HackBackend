@@ -22,7 +22,7 @@ async def get_variable_by_id(variable_id: str, variables=variables_service, me=D
     return await variables.id(variable_id)
 
 
-@variable_router.get('/document/{document_id}', name="Get Variable By Id", response_model=VariablesRead)
+@variable_router.get('/document/{document_id}', name="Get Variable By document id", response_model=List[VariablesRead])
 async def get_variable_by_id(document_id: str, variables=variables_service, me=Depends(get_me)):
     return await variables.document(document_id)
 

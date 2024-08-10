@@ -11,6 +11,8 @@ class Projects(Base):
     company_name: Mapped[str]
     caver: Mapped[str] = mapped_column(nullable=True)
 
+    creator_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
+
 
 class RelatedProject(Base):
     __tablename__ = 'related_projects'

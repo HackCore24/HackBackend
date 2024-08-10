@@ -71,6 +71,10 @@ class ProjectService(BaseService):
 
         return related_projects.all()
 
+    async def all_my_projects(self, user):
+        query = select(Projects).where(Projects.creator_id == user.id)
+        return (await self.session.scalars(query)).all()
+
 
 async def get_project_service(session=Depends(AsyncDatabase.get_session)):
     return ProjectService(session)

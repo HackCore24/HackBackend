@@ -8,6 +8,7 @@ from urllib.parse import parse_qs
 import bcrypt
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from slugify import slugify
 from sqlalchemy import select, func, or_
 
 from api.users.model import Users
@@ -183,12 +184,12 @@ class UsersService(BaseService):
     def check_webapp_telegram_authorization(self, telegram_data):
         return HashCheck(telegram_data).validate_web_app(telegram_data)
 
-    async def create_telegram_user(self, telegram_data: TelegramRegisterData, username):
+    async def create_telegram_user(self, telegram_data: TelegramRegisterData | TelegramAuthData, username=None):
         try:
             password = bcrypt.hashpw(telegram_data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             user = Users(firstname=telegram_data.first_name,
                          lastname=telegram_data.last_name if telegram_data.last_name else "",
-                         username=username if username else telegram_data.username,
+                         username=username if username else telegram_data.username if telegram_data.username else slugify(telegram_data.first_name),
                          telegram_id=telegram_data.id,
                          telegram=telegram_data.username,
                          password=password,

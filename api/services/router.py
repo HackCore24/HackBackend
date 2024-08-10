@@ -5,69 +5,53 @@ from aiohttp.web_fileresponse import FileResponse
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from starlette.responses import StreamingResponse
 
-from api.documents.service import documents_service
-from api.documents.schema import DocumentsRead, DocumentsCreate, DocumentsUpdate, InputVariables
+from api.services.service import services_service
+from api.services.schema import ServiceRead, ServiceCreate, ServiceUpdate, ChapterCreate, ChapterRead, ChapterUpdate
 from utils.base.authentication import get_me
 
-document_router = APIRouter()
+service_router = APIRouter()
 
 
-@document_router.post('/', name="Create Document", response_model=DocumentsRead)
-async def create_document(document: DocumentsCreate, documents=documents_service, me=Depends(get_me)):
-    return await documents.create(document.__dict__)
+@service_router.post('/chapter/', name="Create chapter", response_model=ChapterRead)
+async def create_service(chapter: ChapterCreate, services=services_service, me=Depends(get_me)):
+    return await services.create(chapter.__dict__)
 
 
-@document_router.post('/upload', name="Create Document by upload", response_model=DocumentsRead)
-async def create_document(document: UploadFile = File(...), documents=documents_service, me=Depends(get_me)):
-    return await documents.create_upload(document)
+@service_router.get('/chapter/', name="Get All chapters", response_model=List[ChapterRead])
+async def get_all_services(services=services_service, me=Depends(get_me)):
+    return await services.all()
 
 
-@document_router.post('/download', name="Download Document", response_model=DocumentsRead)
-async def create_document(document_id: str, documents=documents_service, me=Depends(get_me)):
-    document = await documents.id(document_id)
-    document_link = await documents.convert_html_to_docx(html=document.html, filename=document.title)
-    file_data = await documents.download_file(document_link)
-    filename_utf8 = quote(f"{document.title}.docx")
-    content_disposition = f'attachment; filename*=UTF-8\'\'{filename_utf8}'
-    return StreamingResponse(file_data,
-                             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                             headers={"Content-Disposition": content_disposition})
+@service_router.get('/chapter/{chapter_id}', name="Get chapter By id", response_model=ChapterRead)
+async def get_service_by_id(chapter_id: str, services=services_service, me=Depends(get_me)):
+    return await services.id(chapter_id)
 
 
-@document_router.post('/generate', name="Download generate Document", response_model=DocumentsRead)
-async def create_document(document_id: str, variables: List[InputVariables], documents=documents_service,
-                          me=Depends(get_me)):
-    document, html = await documents.generate(document_id, variables)
-    document_link = await documents.convert_html_to_docx(html=html, filename=document.title)
-    file_data = await documents.download_file(document_link)
-    filename_utf8 = quote(f"{document.title}.docx")
-    content_disposition = f'attachment; filename*=UTF-8\'\'{filename_utf8}'
-    return StreamingResponse(file_data,
-                             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                             headers={"Content-Disposition": content_disposition})
+@service_router.patch('/chapter/{chapter_id}', response_model=ChapterRead)
+async def update_service(chapter_id: str, chapter: ChapterUpdate, services=services_service, me=Depends(get_me)):
+    return await services.update(chapter_id, chapter.__dict__)
 
 
-@document_router.post('/relate', name="relation document and project")
-async def releate_document(document_id: str, project_id: str, documents=documents_service, me=Depends(get_me)):
-    return await documents.create_relation(document_id, project_id)
+@service_router.post('/service/', name="Create chapter", response_model=ServiceRead)
+async def create_service(service: ChapterCreate, services=services_service, me=Depends(get_me)):
+    return await services.create_service(service.__dict__)
 
 
-@document_router.get('/relate/{project_id}', name="get related documents by project_id")
-async def releate_document(project_id: str, documents=documents_service, me=Depends(get_me)):
-    return await documents.get_related_documents(project_id)
+@service_router.get('/service/', name="Get All chapters", response_model=List[ServiceRead])
+async def get_all_services(services=services_service, me=Depends(get_me)):
+    return await services.all_services()
 
 
-@document_router.get('/', name="Get All Documents", response_model=List[DocumentsRead])
-async def get_all_documents(documents=documents_service, me=Depends(get_me)):
-    return await documents.all()
+@service_router.get('/service/chpater/{chapter_id}', name="Get chapter By id", response_model=ServiceRead)
+async def get_service_by_id(chapter_id: str, services=services_service, me=Depends(get_me)):
+    return await services.chapter(chapter_id)
 
 
-@document_router.get('/{document_id}', name="Get Document By Id", response_model=DocumentsRead)
-async def get_document_by_id(document_id: str, documents=documents_service, me=Depends(get_me)):
-    return await documents.id(document_id)
+@service_router.get('/service/{service_id}', name="Get chapter By id", response_model=ServiceRead)
+async def get_service_by_id(service_id: str, services=services_service, me=Depends(get_me)):
+    return await services.service_id(service_id)
 
 
-@document_router.patch('/{document_id}', response_model=DocumentsRead)
-async def update_document(document_id: str, document: DocumentsUpdate, documents=documents_service,
-                          me=Depends(get_me)):
-    return await documents.update(document_id, document.__dict__)
+@service_router.patch('/service/{service_id}', response_model=ServiceRead)
+async def update_service(service_id: str, service: ServiceCreate, services=services_service, me=Depends(get_me)):
+    return await services.update_service(service_id, service.__dict__)

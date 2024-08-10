@@ -28,6 +28,11 @@ async def get_all_projects(projects=projects_service, me=Depends(get_me)):
     return await projects.all_projects()
 
 
+@project_router.get('/user', name="get my project", response_model=List[ProjectRead])
+async def get_all_my_projects(projects=projects_service, me=Depends(get_me)):
+    return await projects.all_my_projects(user=me)
+
+
 @project_router.get('/{project_id}', name="Get Project By Id", response_model=ProjectRead)
 async def get_project_by_id(project_id: str, projects=projects_service, me=Depends(get_me)):
     return await projects.project_by_id(project_id)

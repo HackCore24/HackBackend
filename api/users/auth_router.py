@@ -29,12 +29,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), users=user_ser
 @auth_router.post("/telegram")
 async def auth_telegram(telegram_data: TelegramAuthData, users=user_service):
     verified = users.check_telegram_authorization(telegram_data)
-    print(verified)
     if not verified:
         raise HTTPException(status_code=401, detail="Invalid authentication data")
     user = await users.get(by="telegram_id", value=telegram_data.id)
     if not user:
-        raise HTTPException(404, 'not found')
+        user = await users.create_telegram_user(telegram_data=telegram_data)
+    if not user:
+        raise HTTPException(404, "Not found and cant register")
     return await users.admin_login(user.username)
 
 

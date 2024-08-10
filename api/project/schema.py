@@ -8,7 +8,7 @@ class ProjectBase(BaseModel):
     title: str
     company_name: str
     caver: Optional[str] = None
-
+    creator_id: uuid.UUID
 
 class ProjectCreate(ProjectBase):
     pass

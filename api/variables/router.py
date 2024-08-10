@@ -9,7 +9,7 @@ variable_router = APIRouter()
 
 @variable_router.post('/', name="Create Variable", response_model=VariablesRead)
 async def create_variable(variable: VariablesCreate, variables=variables_service, me=Depends(get_me)):
-    return await variables.create(variable.__dict__)
+    return await variables.create_variable(variable)
 
 
 @variable_router.get('/', name="Get All Variables", response_model=List[VariablesRead])

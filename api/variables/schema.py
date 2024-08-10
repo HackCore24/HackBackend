@@ -6,13 +6,11 @@ from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict
 
 class VariablesBase(BaseModel):
     title: str
-    key: str
     document_id: uuid.UUID
 
 
 class VariablesCreate(VariablesBase):
-    pass
-
+    key: Optional[str] = None
 
 class VariablesRead(VariablesBase):
     id: uuid.UUID

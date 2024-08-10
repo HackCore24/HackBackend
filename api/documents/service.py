@@ -126,7 +126,8 @@ class DocumentsService(BaseService):
     async def get_related_documents(self, project_id):
         related_docs = await self.session.scalars(
             select(Documents)
-            .join(DocumentsProjects, Projects.id == DocumentsProjects.project_id)
+            .join(DocumentsProjects, Documents.id == DocumentsProjects.document_id)
+            .join(Projects, Projects.id == DocumentsProjects.project_id)
             .where(DocumentsProjects.project_id == project_id)
         )
 

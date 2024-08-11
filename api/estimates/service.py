@@ -59,7 +59,6 @@ class ServicesService(BaseService):
             raise HTTPException(404, "project not found")
 
 
-
 async def get_service_service(session=Depends(AsyncDatabase.get_session)):
     return ServicesService(session)
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Service(Base):
-    __tablename__ = 'services'
+    __tablename__ = 'estimates'
 
     position_number: Mapped[str]
     title: Mapped[str]

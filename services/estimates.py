@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Optional, List
 
 import openpyxl
@@ -171,7 +172,11 @@ class Estimates:
         await self.header_format(ws)
         await self.addition(ws)
         ws.sheet_view.showGridLines = False
-        self.wb.save("example_asd.xlsx")
+
+        file_stream = BytesIO()
+        self.wb.save(file_stream)
+        file_stream.seek(0)
+        return file_stream
 
 
 if __name__ == '__main__':

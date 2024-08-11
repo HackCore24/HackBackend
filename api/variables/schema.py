@@ -12,7 +12,9 @@ class VariablesBase(BaseModel):
 class VariablesCreate(VariablesBase):
     key: Optional[str] = None
 
+
 class VariablesRead(VariablesBase):
+    key: str
     id: uuid.UUID
     active: bool
     created_at: datetime

@@ -27,7 +27,7 @@ from api.project_documentation.model import ProjectDocumentations
 from api.project_tasks.model import ProjectTasks
 from api.documents.model import Documents, DocumentsProjects
 from api.variables.model import Variables
-from api.services.model import Chapters, Service
+from api.estimates.model import Chapters, Service
 
 # Models end
 

@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from api.documents.router import document_router
+from api.estimates.router import estimates_router
 from api.project.router import project_router
 from api.project_budget.router import budget_router
 from api.project_documentation.router import documentation_router
@@ -21,3 +22,4 @@ api_router.include_router(status_router, tags=['Project Statuses'], prefix='/pro
 api_router.include_router(tasks_router, tags=['Project Tasks'], prefix='/project_tasks')
 api_router.include_router(document_router, tags=['Documents'], prefix='/documents')
 api_router.include_router(variable_router, tags=['Variables'], prefix='/variables')
+api_router.include_router(estimates_router, tags=['Estimates'], prefix='/estimates')

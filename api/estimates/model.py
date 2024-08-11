@@ -1,11 +1,13 @@
 import uuid
+from typing import List
+
 from utils.base.db_model import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Service(Base):
-    __tablename__ = 'estimates'
+    __tablename__ = 'services'
 
     position_number: Mapped[str]
     title: Mapped[str]
@@ -31,3 +33,5 @@ class Chapters(Base):
     total_material_price: Mapped[int] = mapped_column(nullable=True)
 
     project_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id"))
+
+    services: Mapped[List[Service]] = relationship(Service, uselist=True, backref="chapter", lazy='selectin')

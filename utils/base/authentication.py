@@ -15,14 +15,14 @@ ALGORITHM = "HS256"
 
 
 async def create_access_token(data: dict, expires_delta: timedelta = None):
-    expire = datetime.utcnow() + expires_delta if expires_delta else datetime.utcnow() + timedelta(days=3)
+    expire = datetime.utcnow() + expires_delta if expires_delta else datetime.utcnow() + timedelta(hours=4)
     encoding = data | {"exp": expire}
     encoded_jwt = jwt.encode(encoding, KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
 async def create_refresh_token(data: dict, expires_delta: timedelta = None):
-    expire = datetime.utcnow() + expires_delta if expires_delta else datetime.utcnow() + timedelta(days=7)
+    expire = datetime.utcnow() + expires_delta if expires_delta else datetime.utcnow() + timedelta(days=3)
     encoding = data | {"exp": expire}
     encoded_jwt = jwt.encode(encoding, KEY, algorithm=ALGORITHM)
     return encoded_jwt

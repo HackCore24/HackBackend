@@ -20,7 +20,7 @@ class ServicesService(BaseService):
 
     async def create_service(self, service_data):
         try:
-            service = self.model(**service_data)
+            service = Service(**service_data)
             self.session.add(service)
             await self.session.commit()
             await self.session.refresh(service)

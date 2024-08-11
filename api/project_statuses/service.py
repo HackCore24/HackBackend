@@ -26,13 +26,13 @@ class ProjectStatusesService(BaseService):
         self.session.add(status_reach)
         await self.session.commit()
 
-        message = f"""НОВОЕ СОБЫТИЕ ⭐️
+        message = f'''НОВОЕ СОБЫТИЕ ⭐️
 
 Акт #1523 успешно подписан    
 
 Проект "{project.title}" успешно завершен ✅
 
-Проект принял: {user.firstname} {user.lastname}"""
+Проект принял: {user.firstname} {user.lastname}'''
         await TelegramAPI().send_message(user.telegram_id, message)
         return status_reach
 

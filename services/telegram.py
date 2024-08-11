@@ -1,14 +1,13 @@
-from utils.base.config import settings
+# from utils.base.config import settings
+import asyncio
+
 from utils.base.integration import BaseServiceAPI
 
 
 class TelegramAPI(BaseServiceAPI):
     def __init__(self):
-        super().__init__(base_api=f"https://api.telegram.org/bot{settings.bot.token}")
-        self.product_check = {'Накрутка ПФ 7 дней': (4, 5000.00), "Сделаю сам": (16, 15000.00),
-                              "Подписка": (28, 200000.00), "Сделайте за меня + дизайн": (24, 45000.00),
-                              "Сделайте за меня": (20, 30000.00), "Оптимальный функционал продвижения": (12, 80000.00),
-                              "Накрутка ПФ 1 год": (8, 50000.00)}
+        # super().__init__(base_api=f"https://api.telegram.org/bot{settings.bot.token}")
+        super().__init__(base_api=f"https://api.telegram.org/bot7264557873:AAGtGwY3vDqV__SK5K-jRjoCmx9idKwK-oI")
 
     async def send_message(self, user_id: int, message: str):
         if not user_id:
@@ -16,6 +15,20 @@ class TelegramAPI(BaseServiceAPI):
         url = "/sendMessage"
         body = {"chat_id": user_id,
                 "text": message,
-                "parse_mode": "MarkdownV2"}
+                "parse_mode": "html"}
         response = await self.post(url=url, body=body)
         return response
+
+
+if __name__ == '__main__':
+    async def send():
+        message = f'''НОВОЕ СОБЫТИЕ ⭐️
+
+        Акт #1523 успешно подписан    
+
+        Проект "super projecy" успешно завершен ✅
+
+        Проект принял: Лоx Лоx'''
+        await TelegramAPI().send_message(user_id=373649910, message=message)
+
+    asyncio.run(send())

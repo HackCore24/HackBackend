@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ServiceBase(BaseModel):
@@ -42,7 +42,8 @@ class ServiceRead(ServiceBase):
     id: uuid.UUID
     active: bool
     created_at: datetime
-    update_at: datetime
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ChapterBase(BaseModel):
@@ -52,6 +53,7 @@ class ChapterBase(BaseModel):
     total_operation_price: Optional[int] = None
     total_material_price: Optional[int] = None
 
+    project_id: uuid.UUID
 
 class ChapterCreate(ChapterBase):
     pass
@@ -69,6 +71,8 @@ class ChapterRead(ChapterBase):
     id: uuid.UUID
     active: bool
     created_at: datetime
-    update_at: datetime
+    updated_at: datetime
 
     services: Optional[List[ServiceRead]] = None
+
+    model_config = ConfigDict(from_attributes=True)

@@ -11,6 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from api.documents.model import Documents, DocumentsProjects
 from api.estimates.model import Chapters, Service
 from api.project.model import Projects
+from services.estimates import Estimates
 from utils.base.service import BaseService
 from utils.base.session import AsyncDatabase
 
@@ -57,7 +58,9 @@ class ServicesService(BaseService):
         project = await self.session.get(Projects, project_id)
         if not project:
             raise HTTPException(404, "project not found")
-
+        chapter = await self.session.scalar(select(Chapters).where(Chapters.project_id == project.id))
+        est = await Estimates(project_name=project.company_name, estimate_details=project.title).get_excel([chapter])
+        return est
 
 async def get_service_service(session=Depends(AsyncDatabase.get_session)):
     return ServicesService(session)

@@ -2,7 +2,7 @@ import hashlib
 import hmac
 import random
 import string
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import parse_qs
 
 import bcrypt
@@ -11,6 +11,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from slugify import slugify
 from sqlalchemy import select, func, or_
 
+from api.project.model import Projects
+from api.project_budget.model import ProjectBudget
+from api.project_documentation.model import ProjectDocumentations
+from api.project_statuses.model import ProjectStatusReach
+from api.project_tasks.model import ProjectTasks
 from api.users.model import Users
 from api.users.schema import TelegramAuthData, TelegramRegisterData
 from utils.base.authentication import create_access_token, create_refresh_token
@@ -126,6 +131,7 @@ class UsersService(BaseService):
         self.session.add(user)
         await self.session.commit()
         await self.session.refresh(user)
+        await self.create_default_project(user)
         return user
 
     async def login(self, login: OAuth2PasswordRequestForm = Depends()):
@@ -228,9 +234,67 @@ class UsersService(BaseService):
 
         return (await self.session.scalars(query)).all()
 
+    async def create_default_project(self, user):
+        project = Projects(
+            title="Ведение базовой компании",
+            company_name='Default Company',
+            creator_id=user.id
+        )
+        self.session.add(project)
+        await self.session.flush()
+        # budget
+        budget = ProjectBudget(
+            project_id=project.id,
+            budget=2500000,
+            credit_limit=800000,
+        )
+        self.session.add(budget)
+        # Documents
+        document_1 = ProjectDocumentations(
+            project_id=project.id,
+            file_link="https://docs.google.com/spreadsheets"
+        )
+        document_2 = ProjectDocumentations(
+            project_id=project.id,
+            file_link="https://docs.google.com/spreadsheets"
+        )
+        sign_1 = ProjectDocumentations(
+            project_id=project.id,
+            electronic_signature="https://electronicsign"
+        )
+        sign_2 = ProjectDocumentations(
+            project_id=project.id,
+            electronic_signature="https://electronicsign"
+        )
+        self.session.add_all([document_1, document_2, sign_1, sign_2])
+
+        task = ProjectTasks(
+            project_id=project.id,
+            deadline=datetime.utcnow() + timedelta(days=7),
+            priority=1,
+            responsible_user_id=user.id,
+            plan="Plan",
+            checkbox_tasks=[{"title": "Подтвердить документ", "status": "In progress"},
+                            {"title": "Составить смету", "status": "Waiting"}],
+            status="in progress"
+        )
+        self.session.add(task)
+
+        status_1 = ProjectStatusReach(
+            project_id=project.id,
+            status_id="32b15255-57ab-404d-a6a1-0c4268889ac9",
+            date_reach=datetime.utcnow() - timedelta(minutes=15)
+        )
+        status_2 = ProjectStatusReach(
+            project_id=project.id,
+            status_id="a361948d-7a83-44f9-8c44-25c14d2efe64",
+            date_reach=datetime.utcnow() - timedelta(minutes=15)
+        )
+        self.session.add_all([status_1, status_2])
+        await self.session.commit()
+        return project
 
 async def get_user_service(session=Depends(AsyncDatabase.get_session)):
     return UsersService(session)
-
 
 user_service: UsersService = Depends(get_user_service)

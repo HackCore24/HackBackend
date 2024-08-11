@@ -1,5 +1,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends
+from starlette.responses import StreamingResponse
+
 from api.estimates.service import services_service
 from api.estimates.schema import ServiceRead, ServiceCreate, ServiceUpdate, ChapterCreate, ChapterRead, ChapterUpdate
 from utils.base.authentication import get_me
@@ -55,4 +57,7 @@ async def update_service(service_id: str, service: ServiceUpdate, services=servi
 
 @estimates_router.post('/estimates/generate', name="Generate estimate")
 async def generate_estimate(project_id: str, services=services_service, me=Depends(get_me)):
-    return await services.generate_estimate(project_id)
+    est = await services.generate_estimate(project_id)
+    return StreamingResponse(est,
+                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                             headers={"Content-Disposition": "attachment; filename=report.xlsx"})

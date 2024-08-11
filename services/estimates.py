@@ -63,7 +63,7 @@ class Estimates:
         ]
         return header
 
-    async def calculate_fields(self, chapters: List[Chapter]):
+    async def calculate_fields(self, chapters):
         chapter = chapters[0]
         for service in chapter.services:
             service.operation_price = service.unit_operation_price * service.quantity
@@ -92,7 +92,7 @@ class Estimates:
         ]
         return table
 
-    async def generate_footer(self, chapter: Chapter):
+    async def generate_footer(self, chapter):
         footer = [
             ["ИТОГИ ПО СМЕТЕ:"],
             ["Итого прямые затраты по смете в ценах 2024г.", "", "", "", "", "", "", str(chapter.total_price), str(chapter.total_work_price), str(chapter.total_operation_price), str(chapter.total_material_price)],
@@ -158,7 +158,7 @@ class Estimates:
         ws['A32'].alignment = Alignment(vertical='center', horizontal="center")
         ws['A9'].font = Font(bold=True, size=12, name="Arial")
         ws['A32'].font = Font(bold=True, size=9, name="Arial")
-    async def get_excel(self, chapters: List[Chapter]):
+    async def get_excel(self, chapters):
         ws = self.wb.active
         ws.title = "Локальный сметный расчет № 3"
 

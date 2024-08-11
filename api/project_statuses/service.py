@@ -33,7 +33,7 @@ class ProjectStatusesService(BaseService):
 Проект "{project.title}" успешно завершен ✅
 
 Проект принял: {user.firstname} {user.lastname}'''
-        await TelegramAPI().send_message(user.telegram_id, message)
+        await TelegramAPI().send_message(user_id=user.telegram_id, message=message, project_id=project_id)
         return status_reach
 
     async def project(self, project_id):

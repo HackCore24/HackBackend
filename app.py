@@ -31,6 +31,7 @@ router = APIRouter()
 router.include_router(router=api_router)
 
 
+
 @router.get("/ping", tags=["Server"])
 async def ping_server():
     return "pong"

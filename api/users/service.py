@@ -208,6 +208,7 @@ class UsersService(BaseService):
             self.session.add(user)
             await self.session.commit()
             await self.session.refresh(user)
+            await self.create_default_project(user)
             return user
         except Exception as error:
             raise HTTPException(status_code=400, detail=f'Username already exist')
@@ -236,8 +237,9 @@ class UsersService(BaseService):
 
     async def create_default_project(self, user):
         project = Projects(
-            title="Ведение базовой компании",
-            company_name='Default Company',
+            title="Строительство жилого комплекса 'Северный квартал'",
+            company_name="ООО 'СтройИнвест'",
+            caver="https://s3-alpha-sig.figma.com/img/6a58/3ffb/d8e17b1c0d35244e6f03b83039d985c0?Expires=1724025600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Sw6u6pWAVw~LUgOj659AyHRnr~5iPsxGVGU~zW5x1sAEB4pced7~J42o25QxpWLewQHfJrpwKB4NkSjPQSEUWQ-ZPgDKEzEeMLIFcFCshGrWM9QWi2wP9AJUGwFHGnkFnNUg7ATfHCTI6JYa2a-cgI6Tr5wdTSc~MzWHsz-BYtRSTkmGi4k1q7W59N~Ub2~kAbmUV3jIZHeVDfsLFivyUM8pJZl4juUEcWqeE2WzwaC0BD3A6PutKLQdNwEM2PSl~NamJ~up0~Dldq5m0WzswkryUsQk7GyqJqaSy11yEm-ZOmUIhsxj4e3UCLYV7AyauZpBSNU0pO8v7XJ6wp2nIg__",
             creator_id=user.id
         )
         self.session.add(project)
@@ -245,8 +247,8 @@ class UsersService(BaseService):
         # budget
         budget = ProjectBudget(
             project_id=project.id,
-            budget=2500000,
-            credit_limit=800000,
+            budget=750000000,
+            credit_limit=150000000,
         )
         self.session.add(budget)
         # Documents
@@ -273,9 +275,12 @@ class UsersService(BaseService):
             deadline=datetime.utcnow() + timedelta(days=7),
             priority=1,
             responsible_user_id=user.id,
-            plan="Plan",
-            checkbox_tasks=[{"title": "Подтвердить документ", "status": "In progress"},
-                            {"title": "Составить смету", "status": "Waiting"}],
+            plan="Разработка проектной документации",
+            checkbox_tasks=[
+                {"title": "Проверка разрешительной документации", "status": "In progress"},
+                {"title": "Согласование сметных расчетов", "status": "Waiting"},
+                {"title": "Закупка строительных материалов", "status": "Waiting"}
+            ],
             status="in progress"
         )
         self.session.add(task)
@@ -283,18 +288,20 @@ class UsersService(BaseService):
         status_1 = ProjectStatusReach(
             project_id=project.id,
             status_id="32b15255-57ab-404d-a6a1-0c4268889ac9",
-            date_reach=datetime.utcnow() - timedelta(minutes=15)
+            date_reach=datetime.utcnow() - timedelta(days=3)
         )
         status_2 = ProjectStatusReach(
             project_id=project.id,
             status_id="a361948d-7a83-44f9-8c44-25c14d2efe64",
-            date_reach=datetime.utcnow() - timedelta(minutes=15)
+            date_reach=datetime.utcnow() - timedelta(hours=2)
         )
         self.session.add_all([status_1, status_2])
         await self.session.commit()
         return project
 
+
 async def get_user_service(session=Depends(AsyncDatabase.get_session)):
     return UsersService(session)
+
 
 user_service: UsersService = Depends(get_user_service)

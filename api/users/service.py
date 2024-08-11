@@ -11,6 +11,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from slugify import slugify
 from sqlalchemy import select, func, or_
 
+from api.documents.model import DocumentsProjects
 from api.project.model import Projects
 from api.project_budget.model import ProjectBudget
 from api.project_documentation.model import ProjectDocumentations
@@ -18,6 +19,7 @@ from api.project_statuses.model import ProjectStatusReach
 from api.project_tasks.model import ProjectTasks
 from api.users.model import Users
 from api.users.schema import TelegramAuthData, TelegramRegisterData
+from services.telegram import TelegramAPI
 from utils.base.authentication import create_access_token, create_refresh_token
 from utils.base.config import settings
 from utils.base.service import BaseService
@@ -209,9 +211,17 @@ class UsersService(BaseService):
             await self.session.commit()
             await self.session.refresh(user)
             await self.create_default_project(user)
+            await self.send_tg_reg(user)
             return user
         except Exception as error:
             raise HTTPException(status_code=400, detail=f'Username already exist')
+
+    async def send_tg_reg(self, user):
+        message = f'''Привет, {user.firstname}
+
+Этот бот будет присылать тебе уведомления об продвижении проекта в статусах и выполненных действиях в сервисе ядро ⭐️'''
+        await TelegramAPI().send_message(user_id=user.telegram_id, message=message, project_id=None,
+                                         with_button=False)
 
     async def connect_telegram(self, telegram_data: TelegramAuthData, user):
         user = await self.get(by="email", value=user.email)
@@ -296,6 +306,8 @@ class UsersService(BaseService):
             date_reach=datetime.utcnow() - timedelta(hours=2)
         )
         self.session.add_all([status_1, status_2])
+        document_relate = DocumentsProjects(project_id=project.id, document_id="45e90c3e-622a-49a1-86c0-88e1d514ad93")
+        self.session.add(document_relate)
         await self.session.commit()
         return project
 

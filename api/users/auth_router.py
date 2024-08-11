@@ -32,6 +32,8 @@ async def auth_telegram(telegram_data: TelegramAuthData, users=user_service):
     if not verified:
         raise HTTPException(status_code=401, detail="Invalid authentication data")
     user = await users.get(by="telegram_id", value=telegram_data.id)
+    print(verified)
+    print(user)
     if not user:
         user = await users.create_telegram_user(telegram_data=telegram_data)
     if not user:

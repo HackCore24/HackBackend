@@ -186,10 +186,15 @@ class UsersService(BaseService):
 
     async def create_telegram_user(self, telegram_data: TelegramRegisterData | TelegramAuthData, username=None):
         try:
-            password = bcrypt.hashpw(telegram_data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            if isinstance(telegram_data, TelegramAuthData):
+                gen_password = await self.password_generator()
+                password = bcrypt.hashpw(gen_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            else:
+                password = bcrypt.hashpw(telegram_data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             user = Users(firstname=telegram_data.first_name,
                          lastname=telegram_data.last_name if telegram_data.last_name else "",
-                         username=username if username else telegram_data.username if telegram_data.username else slugify(telegram_data.first_name),
+                         username=username if username else telegram_data.username if telegram_data.username else slugify(
+                             telegram_data.first_name),
                          telegram_id=telegram_data.id,
                          telegram=telegram_data.username,
                          password=password,
